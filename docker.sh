@@ -555,18 +555,18 @@ update() {
       echo $?
     )"
 
-    if [[ ${COMPOSE_FILES_MATCH} -ne 0 ]]; then
-      docker-compose -f docker-compose.new.yml pull
-      docker-compose down
-
+#    if [[ ${COMPOSE_FILES_MATCH} -ne 0 ]]; then
+#      docker-compose -f docker-compose.new.yml pull
+#      docker-compose down
+#
 #      cp docker-compose.yml docker-compose.backup.yml
 #      mv docker-compose.new.yml docker-compose.yml
-    else
-      rm docker-compose.new.yml
-
-      docker-compose pull
-      docker-compose down
-    fi
+#    else
+#      rm docker-compose.new.yml
+#
+#      docker-compose pull
+#      docker-compose down
+#    fi
 
     docker-compose run --rm web -- azuracast_update "$@"
     docker-compose up -d
