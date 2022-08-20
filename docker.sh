@@ -529,17 +529,17 @@ update() {
 #        UPDATE_UTILITY=1
 #      fi
 #    fi
-
-    if [[ ${UPDATE_UTILITY} -ne 0 ]]; then
-      mv docker.new.sh docker.sh
-      chmod a+x docker.sh
-
-      echo "A new Docker Utility Script has been downloaded."
-      echo "Please re-run the update process to continue."
-      exit
-    else
-      rm docker.new.sh
-    fi
+#
+#    if [[ ${UPDATE_UTILITY} -ne 0 ]]; then
+#      mv docker.new.sh docker.sh
+#      chmod a+x docker.sh
+#
+#      echo "A new Docker Utility Script has been downloaded."
+#      echo "Please re-run the update process to continue."
+#      exit
+#    else
+#      rm docker.new.sh
+#    fi
 
     run-installer --update "$@"
 
