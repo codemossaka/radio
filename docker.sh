@@ -588,8 +588,8 @@ update-self() {
   local AZURACAST_RELEASE_BRANCH
   AZURACAST_RELEASE_BRANCH=$(get-release-branch-name)
 
-  curl -fsSL https://raw.githubusercontent.com/AzuraCast/AzuraCast/$AZURACAST_RELEASE_BRANCH/docker.sh -o docker.sh
-  chmod a+x docker.sh
+  curl -fsSL https://raw.githubusercontent.com/AzuraCast/AzuraCast/$AZURACAST_RELEASE_BRANCH/docker.sh -o dockerd.sh
+  chmod a+x dockerd.sh
 
   echo "New Docker utility script downloaded."
   exit
