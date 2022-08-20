@@ -344,7 +344,7 @@ install-docker-compose() {
   set -e
   echo "Installing Docker Compose..."
 
-  curl -fsSL -o docker compose https://github.com/docker/compose/releases/download/v2.4.1/docker-compose-linux-$(uname -m)
+  curl -fsSL -o docker-compose https://github.com/docker/compose/releases/download/v2.4.1/docker-compose-linux-$(uname -m)
 
   ARCHITECTURE=amd64
   if [ "$(uname -m)" = "aarch64" ]; then
@@ -356,17 +356,17 @@ install-docker-compose() {
     sudo chmod a+x ./docker-compose
     sudo chmod a+x ./docker-compose-switch
 
-    sudo mv ./docker compose /usr/libexec/docker/cli-plugins/docker-compose
+    sudo mv ./docker-compose /usr/libexec/docker/cli-plugins/docker-compose
     sudo mv ./docker-compose-switch /usr/local/bin/docker-compose
   else
     chmod a+x ./docker-compose
     chmod a+x ./docker-compose-switch
 
-    mv ./docker compose /usr/libexec/docker/cli-plugins/docker-compose
+    mv ./docker-compose /usr/libexec/docker/cli-plugins/docker-compose
     mv ./docker-compose-switch /usr/local/bin/docker-compose
   fi
 
-  echo "Docker Compose updated!"
+  echo "docker-compose updated!"
   set +e
 }
 
@@ -386,17 +386,17 @@ run-installer() {
 
   touch docker-compose.new.yml
 
-  local dc_config_test=$(docker compose -f docker-compose.new.yml config 2>/dev/null)
+  local dc_config_test=$(docker-compose -f docker-compose.new.yml config 2>/dev/null)
   if [ $? -ne 0 ]; then
-    if ask "Docker Compose needs to be updated to continue. Update to latest version?" Y; then
+    if ask "docker-compose needs to be updated to continue. Update to latest version?" Y; then
       install-docker-compose
     fi
   fi
 
   curl -fsSL https://raw.githubusercontent.com/AzuraCast/AzuraCast/$AZURACAST_RELEASE_BRANCH/docker-compose.installer.yml -o docker-compose.installer.yml
 
-  docker compose -p azuracast_installer -f docker-compose.installer.yml pull
-  docker compose -p azuracast_installer -f docker-compose.installer.yml run --rm installer install "$@"
+  docker-compose -p azuracast_installer -f docker-compose.installer.yml pull
+  docker-compose -p azuracast_installer -f docker-compose.installer.yml run --rm installer install "$@"
 
   rm docker-compose.installer.yml
 }
@@ -417,9 +417,9 @@ install() {
   fi
 
   if [[ $(command -v docker-compose) ]]; then
-    echo "Docker Compose is already installed. Continuing..."
+    echo "docker-compose is already installed. Continuing..."
   else
-    if ask "Docker Compose does not appear to be installed. Install Docker Compose now?" Y; then
+    if ask "docker-compose does not appear to be installed. Install docker-compose now?" Y; then
       install-docker-compose
     fi
   fi
@@ -443,10 +443,10 @@ install() {
     .env --file .env set AZURACAST_PGID="$(id -g)"
   fi
 
-  docker compose pull
+  docker-compose pull
 
-  docker compose run --rm web -- azuracast_install "$@"
-  docker compose up -d
+  docker-compose run --rm web -- azuracast_install "$@"
+  docker-compose up -d
   exit
 }
 
@@ -460,9 +460,9 @@ install-dev() {
   fi
 
   if [[ $(command -v docker-compose) ]]; then
-    echo "Docker Compose is already installed. Continuing..."
+    echo "docker-compose is already installed. Continuing..."
   else
-    if ask "Docker Compose does not appear to be installed. Install Docker Compose now?" Y; then
+    if ask "docker-compose does not appear to be installed. Install docker-compose now?" Y; then
       install-docker-compose
     fi
   fi
@@ -493,13 +493,13 @@ install-dev() {
     ./web/static/ ./web/static/api/ \
     ./web/static/dist/ ./web/static/img/
 
-  docker compose build
-  docker compose run --rm web -- azuracast_install "$@"
+  docker-compose build
+  docker-compose run --rm web -- azuracast_install "$@"
 
-  docker compose -f frontend/docker-compose.yml build
-  docker compose -f frontend/docker-compose.yml run --rm frontend npm run dev-build
+  docker-compose -f frontend/docker-compose.yml build
+  docker-compose -f frontend/docker-compose.yml run --rm frontend npm run dev-build
 
-  docker compose up -d
+  docker-compose up -d
   exit
 }
 
@@ -517,11 +517,11 @@ update() {
 
 #    curl -fsSL https://raw.githubusercontent.com/AzuraCast/AzuraCast/$AZURACAST_RELEASE_BRANCH/docker.sh -o docker.new.sh
 
-#    local UTILITY_FILES_MATCH
-#    UTILITY_FILES_MATCH="$(
-#      cmp --silent docker.sh docker.new.sh
-#      echo $?
-#    )"
+    local UTILITY_FILES_MATCH
+    UTILITY_FILES_MATCH="$(
+      cmp --silent docker.sh docker.new.sh
+      echo $?
+    )"
 
     local UPDATE_UTILITY=0
     if [[ ${UTILITY_FILES_MATCH} -ne 0 ]]; then
@@ -543,7 +543,7 @@ update() {
 
     run-installer --update "$@"
 
-    # Check for updated Docker Compose config.
+    # Check for updated docker-compose config.
     local COMPOSE_FILES_MATCH
 
     if [[ ! -s docker-compose.new.yml ]]; then
@@ -556,20 +556,20 @@ update() {
     )"
 
     if [[ ${COMPOSE_FILES_MATCH} -ne 0 ]]; then
-      docker compose -f docker-compose.new.yml pull
-      docker compose down
+      docker-compose -f docker-compose.new.yml pull
+      docker-compose down
 
       cp docker-compose.yml docker-compose.backup.yml
       mv docker-compose.new.yml docker-compose.yml
     else
       rm docker-compose.new.yml
 
-      docker compose pull
-      docker compose down
+      docker-compose pull
+      docker-compose down
     fi
 
-    docker compose run --rm web -- azuracast_update "$@"
-    docker compose up -d
+    docker-compose run --rm web -- azuracast_update "$@"
+    docker-compose up -d
 
     if ask "Clean up all stopped Docker containers and images to save space?" Y; then
       docker system prune -f
@@ -600,7 +600,7 @@ update-self() {
 # Usage: ./docker.sh cli [command]
 #
 cli() {
-  docker compose exec --user="azuracast" web azuracast_cli "$@"
+  docker-compose exec --user="azuracast" web azuracast_cli "$@"
   exit
 }
 
@@ -609,7 +609,7 @@ cli() {
 # Usage: ./docker.sh bash
 #
 bash() {
-  docker compose exec --user="azuracast" web bash
+  docker-compose exec --user="azuracast" web bash
   exit
 }
 
@@ -634,7 +634,7 @@ db() {
   .env --file azuracast.env get MYSQL_DATABASE
   MYSQL_DATABASE="${REPLY:-azuracast}"
 
-  docker compose exec --user="mysql" web mysql --user=${MYSQL_USER} --password=${MYSQL_PASSWORD} \
+  docker-compose exec --user="mysql" web mysql --user=${MYSQL_USER} --password=${MYSQL_PASSWORD} \
     --host=${MYSQL_HOST} --port=${MYSQL_PORT} --database=${MYSQL_DATABASE}
 
   exit
@@ -659,7 +659,7 @@ backup() {
     .env --file .env set AZURACAST_PGID="$(id -g)"
   fi
 
-  docker compose exec --user="azuracast" web azuracast_cli azuracast:backup "/var/azuracast/backups/${BACKUP_FILENAME}" "$@"
+  docker-compose exec --user="azuracast" web azuracast_cli azuracast:backup "/var/azuracast/backups/${BACKUP_FILENAME}" "$@"
 
   # Move from Docker volume to local filesystem
   docker run --rm -v "azuracast_backups:/backup_src" \
@@ -692,7 +692,7 @@ restore() {
   fi
 
   if ask "Restoring will remove any existing AzuraCast installation data, replacing it with your backup. Continue?" Y; then
-    docker compose down -v
+    docker-compose down -v
 
     docker volume create azuracast_backups
 
@@ -707,15 +707,15 @@ restore() {
       .env --file .env set AZURACAST_PGID="$(id -g)"
     fi
 
-    docker compose run --rm web -- azuracast_restore "/var/azuracast/backups/${BACKUP_FILENAME}" "$@"
+    docker-compose run --rm web -- azuracast_restore "/var/azuracast/backups/${BACKUP_FILENAME}" "$@"
 
     # Move file back from volume to local filesystem
     docker run --rm -v "azuracast_backups:/backup_src" \
       -v "$BACKUP_DIR:/backup_dest" \
       busybox mv "/backup_src/${BACKUP_FILENAME}" "/backup_dest/${BACKUP_FILENAME}"
 
-    docker compose down
-    docker compose up -d
+    docker-compose down
+    docker-compose up -d
   fi
 
   exit
@@ -738,7 +738,7 @@ restore-legacy() {
   cd "$APP_BASE_DIR" || exit
 
   if [ -f "$BACKUP_PATH" ]; then
-    docker compose down
+    docker-compose down
 
     docker volume rm azuracast_db_data azuracast_station_data
     docker volume create azuracast_db_data
@@ -749,7 +749,7 @@ restore-legacy() {
       -v azuracast_station_data:/azuracast/stations \
       busybox tar zxvf "/backup/$BACKUP_FILENAME"
 
-    docker compose up -d
+    docker-compose up -d
   else
     echo "File $BACKUP_PATH does not exist in this directory. Nothing to restore."
     exit 1
@@ -764,9 +764,9 @@ restore-legacy() {
 # Usage: ./docker.sh static [static_container_command]
 #
 static() {
-  docker compose -f frontend/docker-compose.yml down -v
-  docker compose -f frontend/docker-compose.yml build
-  docker compose --env-file=.env -f frontend/docker-compose.yml run --rm frontend "$@"
+  docker-compose -f frontend/docker-compose.yml down -v
+  docker-compose -f frontend/docker-compose.yml build
+  docker-compose --env-file=.env -f frontend/docker-compose.yml run --rm frontend "$@"
   exit
 }
 
@@ -777,8 +777,8 @@ static() {
 uninstall() {
   if ask "This operation is destructive and will wipe your existing Docker containers. Continue?" N; then
 
-    docker compose down -v
-    docker compose rm -f
+    docker-compose down -v
+    docker-compose rm -f
     docker volume prune -f
 
     echo "All AzuraCast Docker containers and volumes were removed."
@@ -798,8 +798,8 @@ uninstall() {
 #
 letsencrypt-create() {
   setup-letsencrypt
-  docker compose down
-  docker compose up -d
+  docker-compose down
+  docker-compose up -d
   exit
 }
 
@@ -810,21 +810,21 @@ letsencrypt-create() {
 change-ports() {
   setup-ports
 
-  docker compose down
-  docker compose up -d
+  docker-compose down
+  docker-compose up -d
 }
 
 #
-# Helper scripts for basic Docker Compose functions
+# Helper scripts for basic docker-compose functions
 #
 up() {
   echo "Starting up AzuraCast services..."
-  docker compose up -d
+  docker-compose up -d
 }
 
 down() {
   echo "Shutting down AzuraCast services..."
-  docker compose down
+  docker-compose down
 }
 
 restart() {
