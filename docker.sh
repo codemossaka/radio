@@ -135,7 +135,6 @@ get-release-branch-name() {
   fi
 }
 
-
 # This is a general-purpose function to ask Yes/No questions in Bash, either
 # with or without a default answer. It keeps repeating the question until it
 # gets a valid answer.
@@ -276,7 +275,7 @@ check-install-requirements() {
   fi
 
   REQUIRED_COMMANDS=(curl awk)
-  for COMMAND in "${REQUIRED_COMMANDS[@]}"; do
+  for COMMAND in "${REQUIRED_COMMANDS[@]}" ; do
     if [[ $(command -v "$COMMAND") ]]; then
       echo -en "\e[32m[PASS]\e[0m Command Present: ${COMMAND}\n"
     else
@@ -305,7 +304,7 @@ check-install-requirements() {
     echo -en "\e[32m[PASS]\e[0m User Permissions\n"
   fi
 
-  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+  SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
   if [[ $SCRIPT_DIR == "/var/azuracast" ]]; then
     echo -en "\e[32m[PASS]\e[0m Installation Directory\n"
   else
@@ -366,7 +365,7 @@ install-docker-compose() {
     mv ./docker-compose-switch /usr/local/bin/docker-compose
   fi
 
-  echo "docker-compose updated!"
+  echo "Docker Compose updated!"
   set +e
 }
 
@@ -388,7 +387,7 @@ run-installer() {
 
   local dc_config_test=$(docker-compose -f docker-compose.new.yml config 2>/dev/null)
   if [ $? -ne 0 ]; then
-    if ask "docker-compose needs to be updated to continue. Update to latest version?" Y; then
+    if ask "Docker Compose needs to be updated to continue. Update to latest version?" Y; then
       install-docker-compose
     fi
   fi
@@ -417,9 +416,9 @@ install() {
   fi
 
   if [[ $(command -v docker-compose) ]]; then
-    echo "docker-compose is already installed. Continuing..."
+    echo "Docker Compose is already installed. Continuing..."
   else
-    if ask "docker-compose does not appear to be installed. Install docker-compose now?" Y; then
+    if ask "Docker Compose does not appear to be installed. Install Docker Compose now?" Y; then
       install-docker-compose
     fi
   fi
@@ -460,9 +459,9 @@ install-dev() {
   fi
 
   if [[ $(command -v docker-compose) ]]; then
-    echo "docker-compose is already installed. Continuing..."
+    echo "Docker Compose is already installed. Continuing..."
   else
-    if ask "docker-compose does not appear to be installed. Install docker-compose now?" Y; then
+    if ask "Docker Compose does not appear to be installed. Install Docker Compose now?" Y; then
       install-docker-compose
     fi
   fi
@@ -491,7 +490,7 @@ install-dev() {
 
   chmod 777 ./frontend/ ./web/ ./vendor/ \
     ./web/static/ ./web/static/api/ \
-    ./web/static/dist/ ./web/static/img/
+     ./web/static/dist/ ./web/static/img/
 
   docker-compose build
   docker-compose run --rm web -- azuracast_install "$@"
@@ -515,60 +514,60 @@ update() {
     local AZURACAST_RELEASE_BRANCH
     AZURACAST_RELEASE_BRANCH=$(get-release-branch-name)
 
-#    curl -fsSL https://raw.githubusercontent.com/AzuraCast/AzuraCast/$AZURACAST_RELEASE_BRANCH/docker.sh -o docker.new.sh
+    curl -fsSL https://raw.githubusercontent.com/AzuraCast/AzuraCast/$AZURACAST_RELEASE_BRANCH/docker.sh -o docker.new.sh
 
-#    local UTILITY_FILES_MATCH
-#    UTILITY_FILES_MATCH="$(
-#      cmp --silent docker.sh docker.new.sh
-#      echo $?
-#    )"
-#
-#    local UPDATE_UTILITY=0
-#    if [[ ${UTILITY_FILES_MATCH} -ne 0 ]]; then
-#      if ask "The Docker Utility Script has changed since your version. Update to latest version?" Y; then
-#        UPDATE_UTILITY=1
-#      fi
-#    fi
-#
-#    if [[ ${UPDATE_UTILITY} -ne 0 ]]; then
-#      mv docker.new.sh docker.sh
-#      chmod a+x docker.sh
-#
-#      echo "A new Docker Utility Script has been downloaded."
-#      echo "Please re-run the update process to continue."
-#      exit
-#    else
-#      rm docker.new.sh
-#    fi
+    local UTILITY_FILES_MATCH
+    UTILITY_FILES_MATCH="$(
+      cmp --silent docker.sh docker.new.sh
+      echo $?
+    )"
+
+    local UPDATE_UTILITY=0
+    if [[ ${UTILITY_FILES_MATCH} -ne 0 ]]; then
+      if ask "The Docker Utility Script has changed since your version. Update to latest version?" Y; then
+        UPDATE_UTILITY=1
+      fi
+    fi
+
+    if [[ ${UPDATE_UTILITY} -ne 0 ]]; then
+      mv docker.new.sh docker.sh
+      chmod a+x docker.sh
+
+      echo "A new Docker Utility Script has been downloaded."
+      echo "Please re-run the update process to continue."
+      exit
+    else
+      rm docker.new.sh
+    fi
 
     run-installer --update "$@"
-#
-#    # Check for updated docker-compose config.
+
+    # Check for updated Docker Compose config.
     local COMPOSE_FILES_MATCH
 
-#    if [[ ! -s docker-compose.new.yml ]]; then
-#      curl -fsSL https://raw.githubusercontent.com/AzuraCast/AzuraCast/$AZURACAST_RELEASE_BRANCH/docker-compose.sample.yml -o docker-compose.new.yml
-#    fi
-#
-#    COMPOSE_FILES_MATCH="$(
-#      cmp --silent docker-composed.yml docker-compose.new.yml
-#      echo $?
-#    )"
+    if [[ ! -s docker-compose.new.yml ]]; then
+      curl -fsSL https://raw.githubusercontent.com/AzuraCast/AzuraCast/$AZURACAST_RELEASE_BRANCH/docker-compose.sample.yml -o docker-compose.new.yml
+    fi
 
-#    if [[ ${COMPOSE_FILES_MATCH} -ne 0 ]]; then
+    COMPOSE_FILES_MATCH="$(
+      cmp --silent docker-compose.yml docker-compose.new.yml
+      echo $?
+    )"
+
+    if [[ ${COMPOSE_FILES_MATCH} -ne 0 ]]; then
       docker-compose -f docker-compose.new.yml pull
       docker-compose down
 
       cp docker-compose.yml docker-compose.backup.yml
       mv docker-compose.new.yml docker-compose.yml
-#    else
-#      rm docker-compose.new.yml
-#
-#      docker-compose pull
-#      docker-compose down
-#    fi
+    else
+      rm docker-compose.new.yml
 
-    docker-compose run --rm web -- azuracast_update "$@"
+      docker-compose pull
+      docker-compose down
+    fi
+
+      docker-compose run --rm web -- azuracast_update "$@"
     docker-compose up -d
 
     if ask "Clean up all stopped Docker containers and images to save space?" Y; then
@@ -588,8 +587,8 @@ update-self() {
   local AZURACAST_RELEASE_BRANCH
   AZURACAST_RELEASE_BRANCH=$(get-release-branch-name)
 
-  curl -fsSL https://raw.githubusercontent.com/AzuraCast/AzuraCast/$AZURACAST_RELEASE_BRANCH/docker.sh -o dockerd.sh
-  chmod a+x dockerd.sh
+  curl -fsSL https://raw.githubusercontent.com/AzuraCast/AzuraCast/$AZURACAST_RELEASE_BRANCH/docker.sh -o docker.sh
+  chmod a+x docker.sh
 
   echo "New Docker utility script downloaded."
   exit
@@ -663,8 +662,8 @@ backup() {
 
   # Move from Docker volume to local filesystem
   docker run --rm -v "azuracast_backups:/backup_src" \
-    -v "$BACKUP_DIR:/backup_dest" \
-    busybox mv "/backup_src/${BACKUP_FILENAME}" "/backup_dest/${BACKUP_FILENAME}"
+  -v "$BACKUP_DIR:/backup_dest" \
+  busybox mv "/backup_src/${BACKUP_FILENAME}" "/backup_dest/${BACKUP_FILENAME}"
 }
 
 #
@@ -815,7 +814,7 @@ change-ports() {
 }
 
 #
-# Helper scripts for basic docker-compose functions
+# Helper scripts for basic Docker Compose functions
 #
 up() {
   echo "Starting up AzuraCast services..."
@@ -833,6 +832,6 @@ restart() {
 }
 
 # Ensure we're in the same directory as this script.
-cd "$(dirname "${BASH_SOURCE[0]}")" || exit
+cd "$( dirname "${BASH_SOURCE[0]}" )" || exit
 
 "$@"
