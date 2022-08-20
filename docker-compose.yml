@@ -15,7 +15,7 @@ services:
             - /home/media:/home/media
             - ./logs/:/var/log/nginx
             - ./projects/:/var/www/html
-            -
+
     web:
         container_name: azuracast
         image: 'ghcr.io/azuracast/azuracast:${AZURACAST_VERSION:-latest}'
