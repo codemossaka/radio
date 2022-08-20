@@ -1,21 +1,5 @@
 version: '3.9'
 services:
-    nginx:
-        image: nginx
-        restart: always
-        container_name: nginx
-        ports:
-            - "80:80"
-        #  command: chmod -R 777 /home/media/
-        volumes:
-            - ./configs/conf.d/:/etc/nginx/conf.d
-            - ./configs/vhost.d/:/etc/nginx/vhost.d
-            - ./configs/certs/:/etc/nginx/certs
-            - ./configs/htpasswd/:/etc/nginx/htpasswd
-            - /home/media:/home/media
-            - ./logs/:/var/log/nginx
-            - ./projects/:/var/www/html
-
     web:
         container_name: azuracast
         image: 'ghcr.io/azuracast/azuracast:${AZURACAST_VERSION:-latest}'
@@ -182,6 +166,8 @@ services:
             PUID: '${AZURACAST_PUID:-1000}'
             PGID: '${AZURACAST_PGID:-1000}'
         volumes:
+            - ./configs/conf.d/:/etc/nginx/conf.d
+            - ./configs/vhost.d/:/etc/nginx/vhost.d
             - 'letsencrypt:/etc/nginx/certs'
             - 'letsencrypt_acme:/etc/acme.sh'
             - 'www_uploads:/var/azuracast/uploads'
