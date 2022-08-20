@@ -517,18 +517,18 @@ update() {
 
 #    curl -fsSL https://raw.githubusercontent.com/AzuraCast/AzuraCast/$AZURACAST_RELEASE_BRANCH/docker.sh -o docker.new.sh
 
-    local UTILITY_FILES_MATCH
-    UTILITY_FILES_MATCH="$(
-      cmp --silent docker.sh docker.new.sh
-      echo $?
-    )"
-
-    local UPDATE_UTILITY=0
-    if [[ ${UTILITY_FILES_MATCH} -ne 0 ]]; then
-      if ask "The Docker Utility Script has changed since your version. Update to latest version?" Y; then
-        UPDATE_UTILITY=1
-      fi
-    fi
+#    local UTILITY_FILES_MATCH
+#    UTILITY_FILES_MATCH="$(
+#      cmp --silent docker.sh docker.new.sh
+#      echo $?
+#    )"
+#
+#    local UPDATE_UTILITY=0
+#    if [[ ${UTILITY_FILES_MATCH} -ne 0 ]]; then
+#      if ask "The Docker Utility Script has changed since your version. Update to latest version?" Y; then
+#        UPDATE_UTILITY=1
+#      fi
+#    fi
 
     if [[ ${UPDATE_UTILITY} -ne 0 ]]; then
       mv docker.new.sh docker.sh
