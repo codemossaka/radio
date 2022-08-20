@@ -166,8 +166,8 @@ services:
             PUID: '${AZURACAST_PUID:-1000}'
             PGID: '${AZURACAST_PGID:-1000}'
         volumes:
-            - ./configs/conf.d/:/etc/nginx/conf.d
-            - ./configs/vhost.d/:/etc/nginx/vhost.d
+            - './configs/conf.d/:/etc/nginx/conf.d'
+            - './configs/vhost.d/:/etc/nginx/vhost.d'
             - 'letsencrypt:/etc/nginx/certs'
             - 'letsencrypt_acme:/etc/acme.sh'
             - 'www_uploads:/var/azuracast/uploads'
