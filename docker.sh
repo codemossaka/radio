@@ -551,16 +551,16 @@ update() {
     fi
 
     COMPOSE_FILES_MATCH="$(
-#      cmp --silent docker-compose.yml docker-compose.new.yml
+      cmp --silent docker-composed.yml docker-compose.new.yml
       echo $?
     )"
 
     if [[ ${COMPOSE_FILES_MATCH} -ne 0 ]]; then
-#      docker-compose -f docker-compose.new.yml pull
-#      docker-compose down
+      docker-compose -f docker-compose.new.yml pull
+      docker-compose down
 
       cp docker-compose.yml docker-compose.backup.yml
-#      mv docker-compose.new.yml docker-compose.yml
+      mv docker-compose.new.yml docker-composex.yml
     else
       rm docker-compose.new.yml
 
