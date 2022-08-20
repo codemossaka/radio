@@ -542,31 +542,31 @@ update() {
 #    fi
 
     run-installer --update "$@"
-
-    # Check for updated docker-compose config.
+#
+#    # Check for updated docker-compose config.
     local COMPOSE_FILES_MATCH
 
-    if [[ ! -s docker-compose.new.yml ]]; then
-      curl -fsSL https://raw.githubusercontent.com/AzuraCast/AzuraCast/$AZURACAST_RELEASE_BRANCH/docker-compose.sample.yml -o docker-compose.new.yml
-    fi
+#    if [[ ! -s docker-compose.new.yml ]]; then
+#      curl -fsSL https://raw.githubusercontent.com/AzuraCast/AzuraCast/$AZURACAST_RELEASE_BRANCH/docker-compose.sample.yml -o docker-compose.new.yml
+#    fi
+#
+#    COMPOSE_FILES_MATCH="$(
+#      cmp --silent docker-composed.yml docker-compose.new.yml
+#      echo $?
+#    )"
 
-    COMPOSE_FILES_MATCH="$(
-      cmp --silent docker-composed.yml docker-compose.new.yml
-      echo $?
-    )"
-
-    if [[ ${COMPOSE_FILES_MATCH} -ne 0 ]]; then
+#    if [[ ${COMPOSE_FILES_MATCH} -ne 0 ]]; then
       docker-compose -f docker-compose.new.yml pull
       docker-compose down
 
       cp docker-compose.yml docker-compose.backup.yml
       mv docker-compose.new.yml docker-compose.yml
-    else
-      rm docker-compose.new.yml
-
-      docker-compose pull
-      docker-compose down
-    fi
+#    else
+#      rm docker-compose.new.yml
+#
+#      docker-compose pull
+#      docker-compose down
+#    fi
 
     docker-compose run --rm web -- azuracast_update "$@"
     docker-compose up -d
