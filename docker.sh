@@ -515,13 +515,13 @@ update() {
     local AZURACAST_RELEASE_BRANCH
     AZURACAST_RELEASE_BRANCH=$(get-release-branch-name)
 
-    curl -fsSL https://raw.githubusercontent.com/AzuraCast/AzuraCast/$AZURACAST_RELEASE_BRANCH/docker.sh -o docker.new.sh
+#    curl -fsSL https://raw.githubusercontent.com/AzuraCast/AzuraCast/$AZURACAST_RELEASE_BRANCH/docker.sh -o docker.new.sh
 
-    local UTILITY_FILES_MATCH
-    UTILITY_FILES_MATCH="$(
-      cmp --silent docker.sh docker.new.sh
-      echo $?
-    )"
+#    local UTILITY_FILES_MATCH
+#    UTILITY_FILES_MATCH="$(
+#      cmp --silent docker.sh docker.new.sh
+#      echo $?
+#    )"
 
     local UPDATE_UTILITY=0
     if [[ ${UTILITY_FILES_MATCH} -ne 0 ]]; then
