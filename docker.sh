@@ -560,7 +560,7 @@ update() {
       docker-compose down
 
       cp docker-compose.yml docker-compose.backup.yml
-      mv docker-compose.new.yml docker-composex.yml
+      mv docker-compose.new.yml docker-compose.yml
     else
       rm docker-compose.new.yml
 
