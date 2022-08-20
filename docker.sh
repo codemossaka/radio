@@ -275,7 +275,7 @@ check-install-requirements() {
   fi
 
   REQUIRED_COMMANDS=(curl awk)
-  for COMMAND in "${REQUIRED_COMMANDS[@]}" ; do
+  for COMMAND in "${REQUIRED_COMMANDS[@]}"; do
     if [[ $(command -v "$COMMAND") ]]; then
       echo -en "\e[32m[PASS]\e[0m Command Present: ${COMMAND}\n"
     else
@@ -304,7 +304,7 @@ check-install-requirements() {
     echo -en "\e[32m[PASS]\e[0m User Permissions\n"
   fi
 
-  SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
   if [[ $SCRIPT_DIR == "/var/azuracast" ]]; then
     echo -en "\e[32m[PASS]\e[0m Installation Directory\n"
   else
@@ -490,7 +490,7 @@ install-dev() {
 
   chmod 777 ./frontend/ ./web/ ./vendor/ \
     ./web/static/ ./web/static/api/ \
-     ./web/static/dist/ ./web/static/img/
+    ./web/static/dist/ ./web/static/img/
 
   docker compose build
   docker compose run --rm web -- azuracast_install "$@"
@@ -662,8 +662,8 @@ backup() {
 
   # Move from Docker volume to local filesystem
   docker run --rm -v "azuracast_backups:/backup_src" \
-  -v "$BACKUP_DIR:/backup_dest" \
-  busybox mv "/backup_src/${BACKUP_FILENAME}" "/backup_dest/${BACKUP_FILENAME}"
+    -v "$BACKUP_DIR:/backup_dest" \
+    busybox mv "/backup_src/${BACKUP_FILENAME}" "/backup_dest/${BACKUP_FILENAME}"
 }
 
 #
@@ -832,6 +832,6 @@ restart() {
 }
 
 # Ensure we're in the same directory as this script.
-cd "$( dirname "${BASH_SOURCE[0]}" )" || exit
+cd "$(dirname "${BASH_SOURCE[0]}")" || exit
 
 "$@"
